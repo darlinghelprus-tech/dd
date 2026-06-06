@@ -36,14 +36,6 @@
     padding-bottom: 160px;
   }
 
-  /* Telegram theme adaptation */
-  body.tg-theme {
-    --bg: var(--tg-theme-bg-color, #0d0f14);
-    --surface: var(--tg-theme-secondary-bg-color, #161a23);
-    --text: var(--tg-theme-text-color, #e8ecf4);
-    --accent: var(--tg-theme-button-color, #4f8ef7);
-  }
-
   .header {
     padding: 20px 16px 16px;
     border-bottom: 1px solid var(--border);
@@ -877,20 +869,35 @@
 
 <script>
 // ── Init Telegram Web App ──
+var tg = null;
 if (window.Telegram && window.Telegram.WebApp) {
-  var tg = window.Telegram.WebApp;
+  tg = window.Telegram.WebApp;
   tg.ready();
   tg.expand();
-  document.body.classList.add('tg-theme');
-  if (tg.colorScheme === 'dark') {
-    document.documentElement.setAttribute('data-theme', 'dark');
-  }
 }
 
-// ── Theme toggle ──
-var isDark = true;
-function toggleTheme() {
-  isDark = !isDark;
+// ── Theme logic ──
+// Priority: 1) localStorage override, 2) Telegram colorScheme, 3) system prefers-color-scheme, 4) dark default
+function detectInitialTheme() {
+  try {
+    var saved = localStorage.getItem('dd_theme_override');
+    if (saved === 'light') return 'light';
+    if (saved === 'dark')  return 'dark';
+  } catch(e) {}
+  // If user never toggled manually — follow Telegram or system
+  if (tg && tg.colorScheme) {
+    return tg.colorScheme; // 'dark' or 'light'
+  }
+  if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+    return 'light';
+  }
+  return 'dark';
+}
+
+var isDark = true; // actual state
+
+function applyTheme(theme) {
+  isDark = (theme === 'dark');
   if (isDark) {
     document.body.classList.remove('light');
     document.getElementById('theme-icon').textContent = '🌙';
@@ -898,13 +905,26 @@ function toggleTheme() {
     document.body.classList.add('light');
     document.getElementById('theme-icon').textContent = '☀️';
   }
-  try { localStorage.setItem('dd_theme', isDark ? 'dark' : 'light'); } catch(e){}
 }
-// Restore saved theme
-try {
-  var saved = localStorage.getItem('dd_theme');
-  if (saved === 'light') { isDark = true; toggleTheme(); }
-} catch(e){}
+
+function toggleTheme() {
+  var next = isDark ? 'light' : 'dark';
+  applyTheme(next);
+  try { localStorage.setItem('dd_theme_override', next); } catch(e) {}
+}
+
+// Apply on load
+applyTheme(detectInitialTheme());
+
+// Listen for Telegram theme changes (user switches system theme while app is open)
+if (tg && tg.onEvent) {
+  tg.onEvent('themeChanged', function() {
+    try {
+      var override = localStorage.getItem('dd_theme_override');
+      if (!override) applyTheme(tg.colorScheme || 'dark');
+    } catch(e) { applyTheme(tg.colorScheme || 'dark'); }
+  });
+}
 
 function fmt(n) {
   return n.toLocaleString('ru-RU', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' ₽';
