@@ -356,6 +356,12 @@
   .badge-blue { background: rgba(79,142,247,0.15); color: #7eb3ff; }
   .badge-teal { background: rgba(45,212,191,0.12); color: var(--accent2); }
 
+  .desc-amount {
+    font-weight: 600;
+    color: var(--accent2);
+    margin-left: 4px;
+  }
+
   optgroup { font-weight: 600; }
   option { font-weight: 400; }
 
@@ -478,60 +484,60 @@
       <div class="field-right">
         <select id="position" onchange="calc()">
           <optgroup label="── Специальные ──">
-            <option value="10032">Курсант — 10 032 ₽</option>
-            <option value="14331">Слушатель — 14 331 ₽</option>
+            <option value="10032">Курсант</option>
+            <option value="14331">Слушатель</option>
           </optgroup>
           <optgroup label="── Тарифные разряды ──">
-            <option value="14331">1 — 14 331 ₽</option>
-            <option value="15761">2 — 15 761 ₽</option>
-            <option value="17196">3 — 17 196 ₽</option>
-            <option value="18629">4 — 18 629 ₽</option>
-            <option value="21495">5 — 21 495 ₽</option>
-            <option value="22926">6 — 22 926 ₽</option>
-            <option value="24359">7 — 24 359 ₽</option>
-            <option value="25076">8 — 25 076 ₽</option>
-            <option value="25791">9 — 25 791 ₽</option>
-            <option value="28655" selected>10 — 28 655 ₽</option>
-            <option value="29373">11 — 29 373 ₽</option>
-            <option value="30091">12 — 30 091 ₽</option>
-            <option value="30805">13 — 30 805 ₽</option>
-            <option value="31521">14 — 31 521 ₽</option>
-            <option value="32239">15 — 32 239 ₽</option>
-            <option value="32954">16 — 32 954 ₽</option>
-            <option value="33671">17 — 33 671 ₽</option>
-            <option value="34388">18 — 34 388 ₽</option>
-            <option value="35103">19 — 35 103 ₽</option>
-            <option value="35819">20 — 35 819 ₽</option>
-            <option value="36536">21 — 36 536 ₽</option>
-            <option value="37252">22 — 37 252 ₽</option>
-            <option value="37970">23 — 37 970 ₽</option>
-            <option value="38686">24 — 38 686 ₽</option>
-            <option value="39400">25 — 39 400 ₽</option>
-            <option value="40118">26 — 40 118 ₽</option>
-            <option value="40835">27 — 40 835 ₽</option>
-            <option value="41549">28 — 41 549 ₽</option>
-            <option value="42267">29 — 42 267 ₽</option>
-            <option value="42983">30 — 42 983 ₽</option>
-            <option value="43698">31 — 43 698 ₽</option>
-            <option value="44416">32 — 44 416 ₽</option>
-            <option value="45132">33 — 45 132 ₽</option>
-            <option value="45849">34 — 45 849 ₽</option>
-            <option value="46565">35 — 46 565 ₽</option>
-            <option value="47281">36 — 47 281 ₽</option>
-            <option value="47998">37 — 47 998 ₽</option>
-            <option value="48713">38 — 48 713 ₽</option>
-            <option value="49430">39 — 49 430 ₽</option>
-            <option value="50146">40 — 50 146 ₽</option>
-            <option value="50863">41 — 50 863 ₽</option>
-            <option value="51579">42 — 51 579 ₽</option>
-            <option value="52295">43 — 52 295 ₽</option>
-            <option value="53012">44 — 53 012 ₽</option>
-            <option value="53727">45 — 53 727 ₽</option>
-            <option value="54444">46 — 54 444 ₽</option>
-            <option value="57308">47 — 57 308 ₽</option>
-            <option value="60176">48 — 60 176 ₽</option>
-            <option value="63039">49 — 63 039 ₽</option>
-            <option value="64473">50 — 64 473 ₽</option>
+            <option value="14331">1</option>
+            <option value="15761">2</option>
+            <option value="17196">3</option>
+            <option value="18629">4</option>
+            <option value="21495">5</option>
+            <option value="22926">6</option>
+            <option value="24359">7</option>
+            <option value="25076">8</option>
+            <option value="25791">9</option>
+            <option value="28655" selected>10</option>
+            <option value="29373">11</option>
+            <option value="30091">12</option>
+            <option value="30805">13</option>
+            <option value="31521">14</option>
+            <option value="32239">15</option>
+            <option value="32954">16</option>
+            <option value="33671">17</option>
+            <option value="34388">18</option>
+            <option value="35103">19</option>
+            <option value="35819">20</option>
+            <option value="36536">21</option>
+            <option value="37252">22</option>
+            <option value="37970">23</option>
+            <option value="38686">24</option>
+            <option value="39400">25</option>
+            <option value="40118">26</option>
+            <option value="40835">27</option>
+            <option value="41549">28</option>
+            <option value="42267">29</option>
+            <option value="42983">30</option>
+            <option value="43698">31</option>
+            <option value="44416">32</option>
+            <option value="45132">33</option>
+            <option value="45849">34</option>
+            <option value="46565">35</option>
+            <option value="47281">36</option>
+            <option value="47998">37</option>
+            <option value="48713">38</option>
+            <option value="49430">39</option>
+            <option value="50146">40</option>
+            <option value="50863">41</option>
+            <option value="51579">42</option>
+            <option value="52295">43</option>
+            <option value="53012">44</option>
+            <option value="53727">45</option>
+            <option value="54444">46</option>
+            <option value="57308">47</option>
+            <option value="60176">48</option>
+            <option value="63039">49</option>
+            <option value="64473">50</option>
           </optgroup>
         </select>
       </div>
@@ -540,7 +546,7 @@
     <div class="field">
       <div class="field-left">
         <div class="field-name">Повышение ОВД <span class="badge badge-blue">лётный состав</span></div>
-        <div class="field-desc">Коэффициент к окладу по должности</div>
+        <div class="field-desc" id="d-ovdrise">Коэффициент к окладу по должности</div>
       </div>
       <div class="field-right">
         <select id="ovd-raise" onchange="calc()">
@@ -570,7 +576,7 @@
     <div class="field">
       <div class="field-left">
         <div class="field-name">Выслуга лет (стандартная)</div>
-        <div class="field-desc">Надбавка по ФЗ-306 от ОДС</div>
+        <div class="field-desc" id="d-svc">Надбавка по ФЗ-306 от ОДС</div>
       </div>
       <div class="field-right">
         <select id="service" onchange="calc()">
@@ -597,7 +603,7 @@
     <div class="field">
       <div class="field-left">
         <div class="field-name">Классная квалификация</div>
-        <div class="field-desc">От оклада денежного содержания</div>
+        <div class="field-desc" id="d-kl">От оклада по воинской должности (ОВД)</div>
       </div>
       <div class="field-right">
         <select id="klass" onchange="calc()">
@@ -613,7 +619,7 @@
     <div class="field">
       <div class="field-left">
         <div class="field-name">Допуск к государственной тайне</div>
-        <div class="field-desc">Форма допуска</div>
+        <div class="field-desc" id="d-sec">Форма допуска</div>
       </div>
       <div class="field-right">
         <select id="secret" onchange="calc()">
@@ -629,7 +635,7 @@
     <div class="field">
       <div class="field-left">
         <div class="field-name">Особые условия службы (ОУС)</div>
-        <div class="field-desc">От оклада по воинской должности (ОВД)</div>
+        <div class="field-desc" id="d-ous">От оклада по воинской должности (ОВД)</div>
       </div>
       <div class="field-right">
         <select id="ous" onchange="calc()">
@@ -661,7 +667,7 @@
     <div class="field">
       <div class="field-left">
         <div class="field-name">Надбавка за риск</div>
-        <div class="field-desc" id="risk-desc">0% — шаг 10%</div>
+        <div class="field-desc" id="d-risk">От оклада по воинской должности (ОВД)</div>
       </div>
       <div class="field-right">
         <div class="slider-wrap">
@@ -676,7 +682,7 @@
     <div class="field">
       <div class="field-left">
         <div class="field-name">Особые достижения (ФИЗО)</div>
-        <div class="field-desc">От оклада по воинской должности (ОВД)</div>
+        <div class="field-desc" id="d-fizo">От оклада по воинской должности (ОВД)</div>
       </div>
       <div class="field-right">
         <select id="fizo" onchange="calc()">
@@ -694,7 +700,7 @@
     <div class="field">
       <div class="field-left">
         <div class="field-name">Ежемесячная премия</div>
-        <div class="field-desc">(ОВД + ОВЗ) × % — за добросовестное исполнение</div>
+        <div class="field-desc" id="d-prem">(ОВД + ОВЗ) × % — за добросовестное исполнение</div>
       </div>
       <div class="field-right">
         <select id="premium" onchange="calc()">
@@ -713,7 +719,7 @@
     <div class="field">
       <div class="field-left">
         <div class="field-name">Стаж в ПЗГТ</div>
-        <div class="field-desc">Подразделения по защите гос. тайны</div>
+        <div class="field-desc" id="d-pzgt">Подразделения по защите гос. тайны</div>
       </div>
       <div class="field-right">
         <select id="pzgt" onchange="calc()">
@@ -728,7 +734,7 @@
     <div class="field">
       <div class="field-left">
         <div class="field-name">Стаж в шифровальном органе (ШО)</div>
-        <div class="field-desc">Надбавка за шифровальную работу</div>
+        <div class="field-desc" id="d-ciph">Надбавка за шифровальную работу</div>
       </div>
       <div class="field-right">
         <select id="cipher" onchange="calc()">
@@ -746,7 +752,7 @@
     <div class="field">
       <div class="field-left">
         <div class="field-name">Юридическая специальность</div>
-        <div class="field-desc">Надбавка за юрид. специальность</div>
+        <div class="field-desc" id="d-yurid">Надбавка за юрид. специальность</div>
       </div>
       <div class="field-right">
         <select id="yurid" onchange="calc()">
@@ -761,7 +767,7 @@
     <div class="field">
       <div class="field-left">
         <div class="field-name">Дополнительные надбавки</div>
-        <div class="field-desc">Госнаграды, спортразряды и прочее</div>
+        <div class="field-desc" id="d-extra">Госнаграды, спортразряды и прочее</div>
       </div>
       <div class="field-right">
         <div class="input-with-unit">
@@ -782,7 +788,7 @@
     <div class="field">
       <div class="field-left">
         <div class="field-name">Повышающий коэффициент</div>
-        <div class="field-desc">Районный, КБУ, северный и т.п.</div>
+        <div class="field-desc" id="d-koeff">Районный, КБУ, северный и т.п.</div>
       </div>
       <div class="field-right">
         <div class="input-with-unit">
@@ -1002,9 +1008,33 @@ function calc() {
   document.getElementById('res-ndfl').textContent  = fmt(ndfl);
   document.getElementById('res-ods').textContent   = fmt(ODS);
 
-  // Update descriptions
+  // Update descriptions with amounts
   document.getElementById('rank-salary-desc').textContent = 'ОВЗ = ' + fmt(OVZ);
   document.getElementById('pos-salary-desc').textContent  = 'ОВД = ' + fmt(OVD);
+
+  function setDesc(id, label, amount) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    if (amount > 0) {
+      el.innerHTML = label + ' <span class="desc-amount">+ ' + fmt(amount) + '</span>';
+    } else {
+      el.textContent = label;
+    }
+  }
+
+  setDesc('d-ovdrise', 'Коэффициент к окладу по должности', OVD - OVD_base);
+  setDesc('d-svc',   'Надбавка по ФЗ-306 от ОДС', n_svc);
+  setDesc('d-kl',    'От оклада по воинской должности (ОВД)', n_kl);
+  setDesc('d-sec',   'Форма допуска', n_sec);
+  setDesc('d-ous',   'От оклада по воинской должности (ОВД)', n_ous);
+  setDesc('d-risk',  'От оклада по воинской должности (ОВД)', n_risk);
+  setDesc('d-fizo',  'От оклада по воинской должности (ОВД)', n_fizo);
+  setDesc('d-prem',  '(ОВД + ОВЗ) × % — за добросовестное исполнение', n_prem);
+  setDesc('d-pzgt',  'Подразделения по защите гос. тайны', n_pzgt);
+  setDesc('d-ciph',  'Надбавка за шифровальную работу', n_ciph);
+  setDesc('d-yurid', 'Надбавка за юрид. специальность', n_yurid);
+  setDesc('d-extra', 'Госнаграды, спортразряды и прочее', n_extra);
+  setDesc('d-koeff', 'Районный, КБУ, северный и т.п.', gross - subtotal);
 
   // Build breakdown
   var rows = [
