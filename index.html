@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Калькулятор ДД военнослужащего</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap');
+
+  :root {
+    --bg: #0d0f14;
+    --surface: #161a23;
+    --surface2: #1e2330;
+    --border: rgba(255,255,255,0.07);
+    --accent: #4f8ef7;
+    --accent2: #2dd4bf;
+    --accent-glow: rgba(79,142,247,0.15);
+    --text: #e8ecf4;
+    --text2: #7d8699;
+    --text3: #4a5168;
+    --success: #2dd4bf;
+    --danger: #f87171;
+    --r: 12px;
+    --r2: 8px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 14px;
+    min-height: 100vh;
+    padding-bottom: 160px;
+  }
+
+  /* Telegram theme adaptation */
+  body.tg-theme {
+    --bg: var(--tg-theme-bg-color, #0d0f14);
+    --surface: var(--tg-theme-secondary-bg-color, #161a23);
+    --text: var(--tg-theme-text-color, #e8ecf4);
+    --accent: var(--tg-theme-button-color, #4f8ef7);
+  }
+
+  .header {
+    padding: 20px 16px 16px;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    background: var(--bg);
+    z-index: 50;
+    backdrop-filter: blur(12px);
+  }
+
+  .header-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 4px;
+  }
+
+  .header-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .header-title {
+    font-family: 'Dela Gothic One', sans-serif;
+    font-size: 17px;
+    letter-spacing: -0.3px;
+    color: var(--text);
+    line-height: 1;
+  }
+
+  .header-sub {
+    font-size: 11px;
+    color: var(--text2);
+    margin-top: 2px;
+    letter-spacing: 0.02em;
+  }
+
+  .header-date {
+    margin-left: auto;
+    font-size: 11px;
+    color: var(--accent2);
+    background: rgba(45,212,191,0.1);
+    padding: 3px 8px;
+    border-radius: 20px;
+    white-space: nowrap;
+  }
+
+  .content { padding: 0 12px; }
+
+  .section {
+    margin-top: 16px;
+    background: var(--surface);
+    border-radius: var(--r);
+    border: 1px solid var(--border);
+    overflow: hidden;
+  }
+
+  .section-header {
+    padding: 10px 14px 8px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+
+  .section-icon {
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    flex-shrink: 0;
+  }
+
+  .icon-blue { background: rgba(79,142,247,0.15); }
+  .icon-teal { background: rgba(45,212,191,0.12); }
+  .icon-amber { background: rgba(251,191,36,0.12); }
+  .icon-red { background: rgba(248,113,113,0.12); }
+  .icon-purple { background: rgba(167,139,250,0.12); }
+  .icon-green { background: rgba(74,222,128,0.12); }
+
+  .section-title-text {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text2);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .field {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    min-height: 52px;
+  }
+
+  .field:last-child { border-bottom: none; }
+
+  .field-left { flex: 1; min-width: 0; }
+
+  .field-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    line-height: 1.3;
+  }
+
+  .field-desc {
+    font-size: 11px;
+    color: var(--text3);
+    margin-top: 2px;
+    line-height: 1.3;
+  }
+
+  .field-right { flex-shrink: 0; min-width: 0; }
+
+  select, input[type="number"] {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 12px;
+    padding: 6px 8px;
+    border-radius: var(--r2);
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+    width: 150px;
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+
+  select:focus, input[type="number"]:focus {
+    border-color: var(--accent);
+  }
+
+  select { padding-right: 26px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237d8699' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 8px center; }
+
+  input[type="number"] { width: 90px; text-align: center; }
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
+
+  .input-with-unit { display: flex; align-items: center; gap: 5px; }
+  .input-unit { font-size: 12px; color: var(--text2); }
+
+  /* Slider */
+  .slider-wrap { width: 100%; }
+
+  input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--surface2);
+    outline: none;
+    cursor: pointer;
+    border: none;
+  }
+
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+    box-shadow: 0 0 0 3px rgba(79,142,247,0.2);
+  }
+
+  .slider-row { display: flex; align-items: center; gap: 10px; margin-top: 4px; }
+  .slider-val { font-size: 13px; font-weight: 600; color: var(--accent); min-width: 42px; text-align: right; }
+
+  /* Result section */
+  .result-sticky {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--bg);
+    border-top: 1px solid var(--border);
+    padding: 12px;
+    z-index: 100;
+    backdrop-filter: blur(16px);
+  }
+
+  .result-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  .metric {
+    background: var(--surface);
+    border-radius: var(--r2);
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+  }
+
+  .metric.main {
+    border-color: rgba(79,142,247,0.3);
+    background: var(--accent-glow);
+  }
+
+  .metric-label { font-size: 10px; color: var(--text3); margin-bottom: 3px; line-height: 1.2; }
+
+  .metric-value {
+    font-family: 'Dela Gothic One', sans-serif;
+    font-size: 18px;
+    color: var(--text);
+    letter-spacing: -0.5px;
+    line-height: 1;
+  }
+
+  .metric.main .metric-value { color: var(--accent); font-size: 22px; }
+
+  .btn-share {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, var(--accent), #6366f1);
+    color: white;
+    border: none;
+    border-radius: var(--r2);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: 0.01em;
+    transition: opacity 0.2s, transform 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .btn-share:active { opacity: 0.85; transform: scale(0.98); }
+
+  /* Breakdown */
+  .breakdown-section {
+    margin-top: 16px;
+  }
+
+  .breakdown-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--border);
+    gap: 8px;
+  }
+
+  .breakdown-item:last-child { border-bottom: none; }
+
+  .breakdown-name {
+    font-size: 12px;
+    color: var(--text2);
+    flex: 1;
+    line-height: 1.3;
+  }
+
+  .breakdown-val {
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .breakdown-val.pos { color: var(--success); }
+  .breakdown-val.neg { color: var(--danger); }
+  .breakdown-val.base { color: var(--text); }
+
+  .breakdown-item.total-row {
+    background: rgba(79,142,247,0.06);
+    border-top: 1px solid rgba(79,142,247,0.2);
+    border-bottom: none;
+    border-radius: 0 0 var(--r) var(--r);
+  }
+
+  .breakdown-item.total-row .breakdown-name { color: var(--text); font-weight: 600; font-size: 13px; }
+  .breakdown-item.total-row .breakdown-val { color: var(--accent); font-size: 14px; }
+
+  /* Animation */
+  .section { animation: fadeUp 0.3s ease both; }
+  .section:nth-child(1) { animation-delay: 0.05s; }
+  .section:nth-child(2) { animation-delay: 0.1s; }
+  .section:nth-child(3) { animation-delay: 0.15s; }
+  .section:nth-child(4) { animation-delay: 0.2s; }
+  .section:nth-child(5) { animation-delay: 0.25s; }
+  .section:nth-child(6) { animation-delay: 0.3s; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .badge {
+    display: inline-block;
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 600;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+
+  .badge-blue { background: rgba(79,142,247,0.15); color: #7eb3ff; }
+  .badge-teal { background: rgba(45,212,191,0.12); color: var(--accent2); }
+
+  optgroup { font-weight: 600; }
+  option { font-weight: 400; }
+
+  /* ── Light theme ── */
+  body.light {
+    --bg: #f0f2f7;
+    --surface: #ffffff;
+    --surface2: #eef0f5;
+    --border: rgba(0,0,0,0.08);
+    --accent: #3b7df5;
+    --accent2: #0fa990;
+    --accent-glow: rgba(59,125,245,0.1);
+    --text: #111827;
+    --text2: #5a6378;
+    --text3: #9ba3b5;
+    --success: #0fa990;
+    --danger: #dc2626;
+  }
+
+  body.light .header { background: var(--bg); }
+  body.light select, body.light input[type="number"] { background: #f5f7fc; border-color: rgba(0,0,0,0.12); color: #111827; }
+  body.light input[type="range"] { background: #d1d5e0; }
+  body.light .result-sticky { background: var(--bg); }
+  body.light .metric { background: #eef0f5; }
+  body.light .metric.main { background: rgba(59,125,245,0.08); border-color: rgba(59,125,245,0.25); }
+  body.light .breakdown-item.total-row { background: rgba(59,125,245,0.05); border-top-color: rgba(59,125,245,0.2); }
+
+  .theme-toggle {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    transition: background 0.2s, transform 0.15s;
+    flex-shrink: 0;
+    padding: 0;
+  }
+  .theme-toggle:active { transform: scale(0.9); }</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-row">
+    <div class="header-icon">🎖️</div>
+    <div>
+      <div class="header-title">Калькулятор ДД</div>
+      <div class="header-sub">Денежное довольствие военнослужащего</div>
+    </div>
+    <div style="margin-left:auto;display:flex;align-items:center;gap:8px;">
+      <div class="header-date">Актуально 2026</div>
+      <button class="theme-toggle" onclick="toggleTheme()" title="Сменить тему" aria-label="Сменить тему">
+        <span id="theme-icon">🌙</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="content">
+
+  <!-- ЗВАНИЕ И ДОЛЖНОСТЬ -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon icon-blue">⭐</div>
+      <span class="section-title-text">Звание и должность</span>
+    </div>
+
+    <div class="field">
+      <div class="field-left">
+        <div class="field-name">Воинское звание</div>
+        <div class="field-desc" id="rank-salary-desc">Оклад по воинскому званию</div>
+      </div>
+      <div class="field-right">
+        <select id="rank" onchange="calc()">
+          <optgroup label="── Рядовой / матросский состав ──">
+            <option value="7166">Солдат / Матрос</option>
+            <option value="7881">Ефрейтор / Ст. матрос</option>
+          </optgroup>
+          <optgroup label="── Сержантский / старшинский состав ──">
+            <option value="8601">Мл. сержант / Старшина 2 ст.</option>
+            <option value="9315">Сержант / Старшина 1 ст.</option>
+            <option value="10032">Ст. сержант / Гл. старшина</option>
+            <option value="10750">Старшина / Гл. корабельный старшина</option>
+          </optgroup>
+          <optgroup label="── Прапорщики / мичманы ──">
+            <option value="11464">Прапорщик / Мичман</option>
+            <option value="12181">Ст. прапорщик / Ст. мичман</option>
+          </optgroup>
+          <optgroup label="── Младшие офицеры ──">
+            <option value="13614">Младший лейтенант</option>
+            <option value="14331">Лейтенант</option>
+            <option value="15046" selected>Старший лейтенант</option>
+            <option value="15761">Капитан / Капитан-лейтенант</option>
+          </optgroup>
+          <optgroup label="── Старшие офицеры ──">
+            <option value="16481">Майор / Капитан 3 ранга</option>
+            <option value="17196">Подполковник / Капитан 2 ранга</option>
+            <option value="18629">Полковник / Капитан 1 ранга</option>
+          </optgroup>
+          <optgroup label="── Высшие офицеры ──">
+            <option value="28655">Генерал-майор / Контр-адмирал</option>
+            <option value="31521">Генерал-лейтенант / Вице-адмирал</option>
+            <option value="35819">Генерал-полковник / Адмирал</option>
+            <option value="38686">Генерал армии / Адмирал флота</option>
+            <option value="42809">Маршал РФ</option>
+          </optgroup>
+        </select>
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="field-left">
+        <div class="field-name">Тарифный разряд по должности</div>
+        <div class="field-desc" id="pos-salary-desc">Оклад по воинской должности</div>
+      </div>
+      <div class="field-right">
+        <select id="position" onchange="calc()">
+          <optgroup label="── Специальные ──">
+            <option value="10032">Курсант — 10 032 ₽</option>
+            <option value="14331">Слушатель — 14 331 ₽</option>
+          </optgroup>
+          <optgroup label="── Тарифные разряды ──">
+            <option value="14331">1 — 14 331 ₽</option>
+            <option value="15761">2 — 15 761 ₽</option>
+            <option value="17196">3 — 17 196 ₽</option>
+            <option value="18629">4 — 18 629 ₽</option>
+            <option value="21495">5 — 21 495 ₽</option>
+            <option value="22926">6 — 22 926 ₽</option>
+            <option value="24359">7 — 24 359 ₽</option>
+            <option value="25076">8 — 25 076 ₽</option>
+            <option value="25791">9 — 25 791 ₽</option>
+            <option value="28655" selected>10 — 28 655 ₽</option>
+            <option value="29373">11 — 29 373 ₽</option>
+            <option value="30091">12 — 30 091 ₽</option>
+            <option value="30805">13 — 30 805 ₽</option>
+            <option value="31521">14 — 31 521 ₽</option>
+            <option value="32239">15 — 32 239 ₽</option>
+            <option value="32954">16 — 32 954 ₽</option>
+            <option value="33671">17 — 33 671 ₽</option>
+            <option value="34388">18 — 34 388 ₽</option>
+            <option value="35103">19 — 35 103 ₽</option>
+            <option value="35819">20 — 35 819 ₽</option>
+            <option value="36536">21 — 36 536 ₽</option>
+            <option value="37252">22 — 37 252 ₽</option>
+            <option value="37970">23 — 37 970 ₽</option>
+            <option value="38686">24 — 38 686 ₽</option>
+            <option value="39400">25 — 39 400 ₽</option>
+            <option value="40118">26 — 40 118 ₽</option>
+            <option value="40835">27 — 40 835 ₽</option>
+            <option value="41549">28 — 41 549 ₽</option>
+            <option value="42267">29 — 42 267 ₽</option>
+            <option value="42983">30 — 42 983 ₽</option>
+            <option value="43698">31 — 43 698 ₽</option>
+            <option value="44416">32 — 44 416 ₽</option>
+            <option value="45132">33 — 45 132 ₽</option>
+            <option value="45849">34 — 45 849 ₽</option>
+            <option value="46565">35 — 46 565 ₽</option>
+            <option value="47281">36 — 47 281 ₽</option>
+            <option value="47998">37 — 47 998 ₽</option>
+            <option value="48713">38 — 48 713 ₽</option>
+            <option value="49430">39 — 49 430 ₽</option>
+            <option value="50146">40 — 50 146 ₽</option>
+            <option value="50863">41 — 50 863 ₽</option>
+            <option value="51579">42 — 51 579 ₽</option>
+            <option value="52295">43 — 52 295 ₽</option>
+            <option value="53012">44 — 53 012 ₽</option>
+            <option value="53727">45 — 53 727 ₽</option>
+            <option value="54444">46 — 54 444 ₽</option>
+            <option value="57308">47 — 57 308 ₽</option>
+            <option value="60176">48 — 60 176 ₽</option>
+            <option value="63039">49 — 63 039 ₽</option>
+            <option value="64473">50 — 64 473 ₽</option>
+          </optgroup>
+        </select>
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="field-left">
+        <div class="field-name">Повышение ОВД <span class="badge badge-blue">лётный состав</span></div>
+        <div class="field-desc">Коэффициент к окладу по должности</div>
+      </div>
+      <div class="field-right">
+        <select id="ovd-raise" onchange="calc()">
+          <option value="0">Нет (0%)</option>
+          <option value="0.1">+10%</option>
+          <option value="0.2">+20%</option>
+          <option value="0.3">+30%</option>
+          <option value="0.4">+40%</option>
+          <option value="0.5">+50%</option>
+          <option value="0.6">+60%</option>
+          <option value="0.7">+70%</option>
+          <option value="0.8">+80%</option>
+          <option value="0.9">+90%</option>
+          <option value="1">+100%</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- ВЫСЛУГА ЛЕТ -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon icon-teal">📅</div>
+      <span class="section-title-text">Выслуга лет</span>
+    </div>
+
+    <div class="field">
+      <div class="field-left">
+        <div class="field-name">Выслуга лет (стандартная)</div>
+        <div class="field-desc">Надбавка по ФЗ-306 от ОДС</div>
+      </div>
+      <div class="field-right">
+        <select id="service" onchange="calc()">
+          <option value="0">менее 2 лет — 0%</option>
+          <option value="0.10">от 2 до 5 лет — 10%</option>
+          <option value="0.15">от 5 до 10 лет — 15%</option>
+          <option value="0.20">от 10 до 15 лет — 20%</option>
+          <option value="0.25">от 15 до 20 лет — 25%</option>
+          <option value="0.30">от 20 до 25 лет — 30%</option>
+          <option value="0.40">от 25 лет и более — 40%</option>
+        </select>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- НАДБАВКИ ОТ ОДС -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon icon-amber">💰</div>
+      <span class="section-title-text">Ежемесячные надбавки от ОДС</span>
+    </div>
+
+    <div class="field">
+      <div class="field-left">
+        <div class="field-name">Классная квалификация</div>
+        <div class="field-desc">От оклада денежного содержания</div>
+      </div>
+      <div class="field-right">
+        <select id="klass" onchange="calc()">
+          <option value="0">Отсутствует — 0%</option>
+          <option value="0.05">3 класс — 5%</option>
+          <option value="0.10">2 класс — 10%</option>
+          <option value="0.20">1 класс — 20%</option>
+          <option value="0.30">Мастер — 30%</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="field-left">
+        <div class="field-name">Допуск к государственной тайне</div>
+        <div class="field-desc">Форма допуска</div>
+      </div>
+      <div class="field-right">
+        <select id="secret" onchange="calc()">
+          <option value="0">Нет — 0%</option>
+          <option value="0.05">С (без пров. мер.) — 5%</option>
+          <option value="0.10">С — 10%</option>
+          <option value="0.20">СС — 20%</option>
+          <option value="0.25">ОВ — 25%</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="field-left">
+        <div class="field-name">Особые условия службы (ОУС)</div>
+        <div class="field-desc">От оклада по воинской должности (ОВД)</div>
+      </div>
+      <div class="field-right">
+        <select id="ous" onchange="calc()">
+          <option value="0">Нет — 0%</option>
+          <option value="0.05">5%</option>
+          <option value="0.10">10%</option>
+          <option value="0.15">15%</option>
+          <option value="0.20">20%</option>
+          <option value="0.25">25%</option>
+          <option value="0.30">30%</option>
+          <option value="0.35">35%</option>
+          <option value="0.40">40%</option>
+          <option value="0.45">45%</option>
+          <option value="0.50">50%</option>
+          <option value="0.55">55%</option>
+          <option value="0.60">60%</option>
+          <option value="0.65">65%</option>
+          <option value="0.70">70%</option>
+          <option value="0.75">75%</option>
+          <option value="0.80">80%</option>
+          <option value="0.85">85%</option>
+          <option value="0.90">90%</option>
+          <option value="0.95">95%</option>
+          <option value="1.00">100%</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="field-left">
+        <div class="field-name">Надбавка за риск</div>
+        <div class="field-desc" id="risk-desc">0% — шаг 10%</div>
+      </div>
+      <div class="field-right">
+        <div class="slider-wrap">
+          <div class="slider-row">
+            <input type="range" id="risk" min="0" max="100" step="10" value="0" oninput="updateSlider('risk','risk-desc','risk-val','%'); calc()">
+            <span class="slider-val" id="risk-val">0%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="field-left">
+        <div class="field-name">Особые достижения (ФИЗО)</div>
+        <div class="field-desc">От оклада по воинской должности (ОВД)</div>
+      </div>
+      <div class="field-right">
+        <select id="fizo" onchange="calc()">
+          <option value="0">Нет — 0%</option>
+          <option value="0.15">2-й квалификационный уровень — 15%</option>
+          <option value="0.30">1-й квалификационный уровень — 30%</option>
+          <option value="0.70">Высший квалификационный уровень — 70%</option>
+          <option value="0.80">1 спортивный разряд — 80%</option>
+          <option value="0.90">Кандидат в мастера спорта — 90%</option>
+          <option value="1.00">Мастер спорта — 100%</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="field-left">
+        <div class="field-name">Ежемесячная премия</div>
+        <div class="field-desc">(ОВД + ОВЗ) × % — за добросовестное исполнение</div>
+      </div>
+      <div class="field-right">
+        <select id="premium" onchange="calc()">
+          <option value="0">Не начислять — 0%</option>
+          <option value="0.05">5%</option>
+          <option value="0.10">10%</option>
+          <option value="0.15">15%</option>
+          <option value="0.20">20%</option>
+          <option value="0.25" selected>25% (стандарт)</option>
+          <option value="0.30">30%</option>
+          <option value="0.35">35%</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="field-left">
+        <div class="field-name">Стаж в ПЗГТ</div>
+        <div class="field-desc">Подразделения по защите гос. тайны</div>
+      </div>
+      <div class="field-right">
+        <select id="pzgt" onchange="calc()">
+          <option value="0">Нет — 0%</option>
+          <option value="0.10">от 1 до 5 лет — 10%</option>
+          <option value="0.15">от 5 до 10 лет — 15%</option>
+          <option value="0.20">от 10 лет и выше — 20%</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="field-left">
+        <div class="field-name">Стаж в шифровальном органе (ШО)</div>
+        <div class="field-desc">Надбавка за шифровальную работу</div>
+      </div>
+      <div class="field-right">
+        <select id="cipher" onchange="calc()">
+          <option value="0">Нет — 0%</option>
+          <option value="0.05">до 3 лет, 2 класс — 5%</option>
+          <option value="0.15">до 3 лет, 1 класс — 15%</option>
+          <option value="0.10">от 3 до 6 лет, 2 класс — 10%</option>
+          <option value="0.20">от 3 до 6 лет, 1 класс — 20%</option>
+          <option value="0.20">от 6 лет и более, 2 класс — 20%</option>
+          <option value="0.30">от 6 лет и более, 1 класс — 30%</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="field-left">
+        <div class="field-name">Юридическая специальность</div>
+        <div class="field-desc">Надбавка за юрид. специальность</div>
+      </div>
+      <div class="field-right">
+        <select id="yurid" onchange="calc()">
+          <option value="0">Нет — 0%</option>
+          <option value="0.15">15%</option>
+          <option value="0.30">30%</option>
+          <option value="0.50">50%</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="field-left">
+        <div class="field-name">Дополнительные надбавки</div>
+        <div class="field-desc">Госнаграды, спортразряды и прочее</div>
+      </div>
+      <div class="field-right">
+        <div class="input-with-unit">
+          <input type="number" id="extra" value="0" min="0" max="200" step="5" oninput="calc()">
+          <span class="input-unit">%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- КОЭФФИЦИЕНТЫ -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon icon-purple">✖️</div>
+      <span class="section-title-text">Коэффициенты</span>
+    </div>
+
+    <div class="field">
+      <div class="field-left">
+        <div class="field-name">Повышающий коэффициент</div>
+        <div class="field-desc">Районный, КБУ, северный и т.п.</div>
+      </div>
+      <div class="field-right">
+        <div class="input-with-unit">
+          <input type="number" id="koeff" value="1" min="1" max="3" step="0.1" oninput="calc()">
+          <span class="input-unit">×</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- НАЛОГОВЫЕ ВЫЧЕТЫ -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon icon-red">📋</div>
+      <span class="section-title-text">Налоговые вычеты (НДФЛ)</span>
+    </div>
+
+    <div class="field">
+      <div class="field-left">
+        <div class="field-name">Налоговый вычет на детей</div>
+        <div class="field-desc">Уменьшает налогооблагаемую базу</div>
+      </div>
+      <div class="field-right">
+        <select id="children" onchange="calc()">
+          <option value="0">Нет — 0 ₽</option>
+          <option value="1400">1 ребёнок — 1 400 ₽</option>
+          <option value="2800">2 ребёнка — 2 800 ₽</option>
+          <option value="5800">3 ребёнка — 5 800 ₽</option>
+          <option value="8200">4+ ребёнка — 8 200 ₽</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="field-left">
+        <div class="field-name">Вычет ветерана боевых действий</div>
+        <div class="field-desc">500 ₽ ежемесячно</div>
+      </div>
+      <div class="field-right">
+        <select id="vet" onchange="calc()">
+          <option value="0">Нет</option>
+          <option value="500">Да — 500 ₽</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- РАСШИФРОВКА -->
+  <div class="section breakdown-section">
+    <div class="section-header">
+      <div class="section-icon icon-green">📊</div>
+      <span class="section-title-text">Полная расшифровка</span>
+    </div>
+    <div id="breakdown-list"></div>
+  </div>
+
+</div>
+
+<!-- STICKY RESULT -->
+<div class="result-sticky">
+  <div class="result-grid">
+    <div class="metric main">
+      <div class="metric-label">На руки</div>
+      <div class="metric-value" id="res-net">—</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Начислено</div>
+      <div class="metric-value" id="res-gross">—</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">НДФЛ удержан</div>
+      <div class="metric-value" id="res-ndfl">—</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">ОДС (оклад)</div>
+      <div class="metric-value" id="res-ods">—</div>
+    </div>
+  </div>
+  <button class="btn-share" onclick="shareResult()">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13"/></svg>
+    Поделиться расчётом
+  </button>
+</div>
+
+<script>
+// ── Init Telegram Web App ──
+if (window.Telegram && window.Telegram.WebApp) {
+  var tg = window.Telegram.WebApp;
+  tg.ready();
+  tg.expand();
+  document.body.classList.add('tg-theme');
+  if (tg.colorScheme === 'dark') {
+    document.documentElement.setAttribute('data-theme', 'dark');
+  }
+}
+
+// ── Theme toggle ──
+var isDark = true;
+function toggleTheme() {
+  isDark = !isDark;
+  if (isDark) {
+    document.body.classList.remove('light');
+    document.getElementById('theme-icon').textContent = '🌙';
+  } else {
+    document.body.classList.add('light');
+    document.getElementById('theme-icon').textContent = '☀️';
+  }
+  try { localStorage.setItem('dd_theme', isDark ? 'dark' : 'light'); } catch(e){}
+}
+// Restore saved theme
+try {
+  var saved = localStorage.getItem('dd_theme');
+  if (saved === 'light') { isDark = true; toggleTheme(); }
+} catch(e){}
+
+function fmt(n) {
+  return n.toLocaleString('ru-RU', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' ₽';
+}
+
+function pct(n) {
+  return (n * 100).toFixed(0) + '%';
+}
+
+function calc() {
+  var OVZ      = +document.getElementById('rank').value;
+  var OVD_base = +document.getElementById('position').value;
+  var ovdRaise = +document.getElementById('ovd-raise').value;
+  var OVD      = OVD_base * (1 + ovdRaise);
+  var ODS      = OVZ + OVD;
+
+  var svc   = +document.getElementById('service').value;
+  var kl    = +document.getElementById('klass').value;
+  var sec   = +document.getElementById('secret').value;
+  var ous   = +document.getElementById('ous').value;
+  var risk  = +document.getElementById('risk').value / 100;
+  var fizo  = +document.getElementById('fizo').value;
+  var prem  = +document.getElementById('premium').value;
+  var pzgt  = +document.getElementById('pzgt').value;
+  var ciph  = +document.getElementById('cipher').value;
+  var yurid = +document.getElementById('yurid').value;
+  var extra = (+document.getElementById('extra').value || 0) / 100;
+  var koeff = +document.getElementById('koeff').value || 1;
+  var ch    = +document.getElementById('children').value;
+  var vet   = +document.getElementById('vet').value;
+
+  // Выслуга лет: (ОВД + ОВЗ) * %
+  var n_svc   = ODS * svc;
+
+  // Классная квалификация: ОВД * %
+  var n_kl    = OVD * kl;
+
+  // Допуск к ГТ: ОВД * %
+  var n_sec   = OVD * sec;
+
+  // ОУС: ОВД * %
+  var n_ous   = OVD * ous;
+
+  // Риск: ОВД * %
+  var n_risk  = OVD * risk;
+
+  // ФИЗО: ОВД * %
+  var n_fizo  = OVD * fizo;
+
+  // Ежемесячная премия: (ОВД + ОВЗ) * %
+  var n_prem  = ODS * prem;
+
+  // Стаж ПЗГТ: ОВД * %
+  var n_pzgt  = OVD * pzgt;
+
+  // Стаж ШО: ОВД * %
+  var n_ciph  = OVD * ciph;
+
+  // Юрид. специальность: ОВД * %
+  var n_yurid = OVD * yurid;
+
+  // Доп. надбавки: ОДС * %
+  var n_extra = ODS * extra;
+
+  var subtotal = ODS + n_svc + n_kl + n_sec + n_ous + n_risk + n_fizo + n_prem + n_pzgt + n_ciph + n_yurid + n_extra;
+  var gross = subtotal * koeff;
+
+  var taxBase = gross - ch - vet;
+  var ndfl = Math.max(0, taxBase * 0.13);
+  var net = gross - ndfl;
+
+  // Update result panel
+  document.getElementById('res-gross').textContent = fmt(gross);
+  document.getElementById('res-net').textContent   = fmt(net);
+  document.getElementById('res-ndfl').textContent  = fmt(ndfl);
+  document.getElementById('res-ods').textContent   = fmt(ODS);
+
+  // Update descriptions
+  document.getElementById('rank-salary-desc').textContent = 'ОВЗ = ' + fmt(OVZ);
+  document.getElementById('pos-salary-desc').textContent  = 'ОВД = ' + fmt(OVD);
+
+  // Build breakdown
+  var rows = [
+    { name: 'Оклад по воинскому званию (ОВЗ)', val: OVZ, cls: 'base' },
+    { name: 'Оклад по воинской должности (ОВД)' + (ovdRaise > 0 ? ' [+' + pct(ovdRaise) + ' лётн.]' : ''), val: OVD, cls: 'base' },
+  ];
+
+  if (n_svc > 0)   rows.push({ name: 'Выслуга лет (' + pct(svc) + ' × ОДС)', val: n_svc, cls: 'pos' });
+  if (n_kl > 0)    rows.push({ name: 'Классная квалификация (' + pct(kl) + ' × ОВД)', val: n_kl, cls: 'pos' });
+  if (n_sec > 0)   rows.push({ name: 'Допуск к ГТ (' + pct(sec) + ' × ОВД)', val: n_sec, cls: 'pos' });
+  if (n_ous > 0)   rows.push({ name: 'ОУС (' + pct(ous) + ' × ОВД)', val: n_ous, cls: 'pos' });
+  if (n_risk > 0)  rows.push({ name: 'Надбавка за риск (' + pct(risk) + ' × ОВД)', val: n_risk, cls: 'pos' });
+  if (n_fizo > 0)  rows.push({ name: 'ФИЗО (' + pct(fizo) + ' × ОВД)', val: n_fizo, cls: 'pos' });
+  if (n_prem > 0)  rows.push({ name: 'Ежемесячная премия (' + pct(prem) + ' × ОДС)', val: n_prem, cls: 'pos' });
+  if (n_pzgt > 0)  rows.push({ name: 'Стаж в ПЗГТ (' + pct(pzgt) + ' × ОВД)', val: n_pzgt, cls: 'pos' });
+  if (n_ciph > 0)  rows.push({ name: 'Стаж в ШО (' + pct(ciph) + ' × ОВД)', val: n_ciph, cls: 'pos' });
+  if (n_yurid > 0) rows.push({ name: 'Юрид. специальность (' + pct(yurid) + ' × ОВД)', val: n_yurid, cls: 'pos' });
+  if (n_extra > 0) rows.push({ name: 'Доп. надбавки (' + pct(extra) + ' × ОДС)', val: n_extra, cls: 'pos' });
+  if (koeff > 1)   rows.push({ name: 'Повышающий коэффициент ×' + koeff.toFixed(1), val: gross - subtotal, cls: 'pos' });
+
+  rows.push({ name: 'Итого начислено', val: gross, cls: 'base', bold: true });
+
+  if (ch > 0)  rows.push({ name: 'Вычет на детей', val: -ch, cls: 'neg' });
+  if (vet > 0) rows.push({ name: 'Вычет ветерана БД', val: -vet, cls: 'neg' });
+  rows.push({ name: 'НДФЛ 13%', val: -ndfl, cls: 'neg' });
+
+  var html = '';
+  rows.forEach(function (r) {
+    html += '<div class="breakdown-item' + (r.bold ? ' total-row' : '') + '">'
+      + '<span class="breakdown-name">' + r.name + '</span>'
+      + '<span class="breakdown-val ' + r.cls + '">' + (r.val < 0 ? '−' : '+') + fmt(Math.abs(r.val)) + '</span>'
+      + '</div>';
+  });
+  html += '<div class="breakdown-item total-row"><span class="breakdown-name">🏦 На руки</span><span class="breakdown-val pos">' + fmt(net) + '</span></div>';
+
+  document.getElementById('breakdown-list').innerHTML = html;
+}
+
+function shareResult() {
+  var net   = document.getElementById('res-net').textContent;
+  var gross = document.getElementById('res-gross').textContent;
+  var ods   = document.getElementById('res-ods').textContent;
+  var rank  = document.getElementById('rank').options[document.getElementById('rank').selectedIndex].text;
+  var pos   = document.getElementById('position').options[document.getElementById('position').selectedIndex].text;
+
+  var text = '🎖 Расчёт ДД (ставки 01.10.2024)\n\n'
+    + '📋 Звание: ' + rank + '\n'
+    + '📋 Должность: ' + pos + '\n'
+    + '─────────────────\n'
+    + '💼 ОДС: ' + ods + '\n'
+    + '📊 Начислено: ' + gross + '\n'
+    + '🏦 На руки: ' + net + '\n'
+    + '─────────────────\n'
+    + '⚠️ Расчёт приблизительный';
+
+  if (window.Telegram && window.Telegram.WebApp) {
+    var tg = window.Telegram.WebApp;
+    if (tg.MainButton) {
+      tg.MainButton.setText('Поделиться');
+      tg.MainButton.show();
+    }
+    tg.sendData(JSON.stringify({
+      type: 'salary_result',
+      net: document.getElementById('res-net').textContent,
+      gross: document.getElementById('res-gross').textContent,
+      text: text
+    }));
+  } else if (navigator.share) {
+    navigator.share({ title: 'Калькулятор ДД', text: text }).catch(function(){});
+  } else if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(function () {
+      var btn = document.querySelector('.btn-share');
+      btn.textContent = '✓ Скопировано!';
+      setTimeout(function () {
+        btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13"/></svg> Поделиться расчётом';
+      }, 2000);
+    });
+  }
+}
+
+// Init
+calc();
+</script>
+</body>
+</html>
