@@ -873,6 +873,33 @@
   </button>
 </div>
 
+<!-- SHARE BOTTOM SHEET -->
+<div id="share-overlay" onclick="closeShare()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:200;backdrop-filter:blur(4px);"></div>
+<div id="share-sheet" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:201;background:var(--surface);border-radius:20px 20px 0 0;padding:0 0 32px;transform:translateY(100%);transition:transform 0.3s cubic-bezier(.32,1,.3,1);">
+  <div style="width:40px;height:4px;background:var(--border);border-radius:2px;margin:12px auto 20px;"></div>
+  <div style="padding:0 16px;">
+    <div style="font-size:13px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px;">Поделиться расчётом</div>
+
+    <!-- Preview card -->
+    <div id="share-preview" style="background:var(--surface2);border-radius:12px;padding:14px 16px;margin-bottom:16px;border:1px solid var(--border);">
+      <div style="font-size:11px;color:var(--text3);margin-bottom:8px;">ПРЕДПРОСМОТР</div>
+      <div id="share-preview-text" style="font-size:13px;color:var(--text);line-height:1.6;white-space:pre-wrap;font-family:'IBM Plex Mono',monospace;"></div>
+    </div>
+
+    <!-- Telegram share -->
+    <button id="btn-tg-share" onclick="doTelegramShare()" style="width:100%;padding:14px;background:linear-gradient(135deg,#229ED9,#1a87bd);color:#fff;border:none;border-radius:12px;font-family:'IBM Plex Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:10px;transition:opacity .2s;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.248l-2.04 9.613c-.152.671-.549.836-1.112.52l-3.07-2.262-1.482 1.426c-.164.164-.301.301-.617.301l.22-3.12 5.674-5.124c.247-.22-.054-.342-.383-.123L7.37 14.71l-3.031-.946c-.659-.206-.672-.659.138-.976l11.844-4.568c.549-.198 1.029.133.24.028z"/></svg>
+      Отправить в Telegram
+    </button>
+
+    <!-- Copy button -->
+    <button id="btn-copy" onclick="doCopy()" style="width:100%;padding:14px;background:var(--surface2);color:var(--text);border:1px solid var(--border);border-radius:12px;font-family:'IBM Plex Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:background .2s;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+      Скопировать текст
+    </button>
+  </div>
+</div>
+
 <script>
 // ── Init Telegram Web App ──
 var tg = null;
@@ -1073,46 +1100,127 @@ function calc() {
   document.getElementById('breakdown-list').innerHTML = html;
 }
 
-function shareResult() {
+// ── Share logic ──
+var _shareText = '';
+
+function buildShareText() {
   var net   = document.getElementById('res-net').textContent;
   var gross = document.getElementById('res-gross').textContent;
+  var ndfl  = document.getElementById('res-ndfl').textContent;
   var ods   = document.getElementById('res-ods').textContent;
   var rank  = document.getElementById('rank').options[document.getElementById('rank').selectedIndex].text;
   var pos   = document.getElementById('position').options[document.getElementById('position').selectedIndex].text;
 
-  var text = '🎖 Расчёт ДД (ставки 01.10.2024)\n\n'
-    + '📋 Звание: ' + rank + '\n'
-    + '📋 Должность: ' + pos + '\n'
-    + '─────────────────\n'
-    + '💼 ОДС: ' + ods + '\n'
-    + '📊 Начислено: ' + gross + '\n'
-    + '🏦 На руки: ' + net + '\n'
-    + '─────────────────\n'
-    + '⚠️ Расчёт приблизительный';
+  // Collect active allowances from breakdown
+  var items = document.querySelectorAll('#breakdown-list .breakdown-item:not(.total-row)');
+  var lines = [];
+  items.forEach(function(el) {
+    var name = el.querySelector('.breakdown-name');
+    var val  = el.querySelector('.breakdown-val');
+    if (name && val) lines.push('  ' + name.textContent + ': ' + val.textContent.replace('−','−').replace('+',''));
+  });
 
-  if (window.Telegram && window.Telegram.WebApp) {
-    var tg = window.Telegram.WebApp;
-    if (tg.MainButton) {
-      tg.MainButton.setText('Поделиться');
-      tg.MainButton.show();
-    }
-    tg.sendData(JSON.stringify({
-      type: 'salary_result',
-      net: document.getElementById('res-net').textContent,
-      gross: document.getElementById('res-gross').textContent,
-      text: text
-    }));
-  } else if (navigator.share) {
-    navigator.share({ title: 'Калькулятор ДД', text: text }).catch(function(){});
-  } else if (navigator.clipboard) {
-    navigator.clipboard.writeText(text).then(function () {
-      var btn = document.querySelector('.btn-share');
-      btn.textContent = '✓ Скопировано!';
-      setTimeout(function () {
-        btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13"/></svg> Поделиться расчётом';
-      }, 2000);
-    });
+  return '🎖 Расчёт денежного довольствия\n'
+    + '━━━━━━━━━━━━━━━━━━\n'
+    + '👤 ' + rank + '\n'
+    + '🏛 Должность (разряд): ' + pos + '\n'
+    + '━━━━━━━━━━━━━━━━━━\n'
+    + lines.join('\n') + '\n'
+    + '━━━━━━━━━━━━━━━━━━\n'
+    + '📊 Начислено: ' + gross + '\n'
+    + '📋 НДФЛ: ' + ndfl + '\n'
+    + '💵 На руки: ' + net + '\n'
+    + '━━━━━━━━━━━━━━━━━━\n'
+    + '⚠️ Расчёт приблизительный. Актуально 2026 г.';
+}
+
+function shareResult() {
+  _shareText = buildShareText();
+  document.getElementById('share-preview-text').textContent = _shareText;
+
+  // Show/hide Telegram button depending on context
+  var tgBtn = document.getElementById('btn-tg-share');
+  if (tg) {
+    tgBtn.style.display = 'flex';
+  } else {
+    tgBtn.style.display = 'none';
   }
+
+  var overlay = document.getElementById('share-overlay');
+  var sheet   = document.getElementById('share-sheet');
+  overlay.style.display = 'block';
+  sheet.style.display   = 'block';
+  requestAnimationFrame(function() {
+    requestAnimationFrame(function() {
+      sheet.style.transform = 'translateY(0)';
+    });
+  });
+}
+
+function closeShare() {
+  var sheet   = document.getElementById('share-sheet');
+  var overlay = document.getElementById('share-overlay');
+  sheet.style.transform = 'translateY(100%)';
+  setTimeout(function() {
+    sheet.style.display   = 'none';
+    overlay.style.display = 'none';
+  }, 300);
+}
+
+function doTelegramShare() {
+  if (!tg) return;
+  // Encode text for Telegram forward
+  var encoded = encodeURIComponent(_shareText);
+  // Use switchInlineQuery for bots, or share URL fallback
+  try {
+    if (tg.version && parseFloat(tg.version) >= 6.9) {
+      tg.shareMessage && tg.shareMessage(_shareText);
+    }
+    // Universal: open Telegram share dialog via t.me share link
+    tg.openTelegramLink('https://t.me/share/url?url=' + encoded);
+  } catch(e) {
+    // Fallback: copy and notify
+    doCopy(true);
+  }
+  closeShare();
+}
+
+function doCopy(fromTgFallback) {
+  var btn = document.getElementById('btn-copy');
+  var originalHTML = btn.innerHTML;
+
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(_shareText).then(function() {
+      showCopied(btn, originalHTML, fromTgFallback);
+    }).catch(function() { legacyCopy(btn, originalHTML, fromTgFallback); });
+  } else {
+    legacyCopy(btn, originalHTML, fromTgFallback);
+  }
+}
+
+function legacyCopy(btn, originalHTML, fromTgFallback) {
+  var ta = document.createElement('textarea');
+  ta.value = _shareText;
+  ta.style.position = 'fixed';
+  ta.style.opacity = '0';
+  document.body.appendChild(ta);
+  ta.focus();
+  ta.select();
+  try { document.execCommand('copy'); } catch(e) {}
+  document.body.removeChild(ta);
+  showCopied(btn, originalHTML, fromTgFallback);
+}
+
+function showCopied(btn, originalHTML, fromTgFallback) {
+  btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Скопировано!';
+  btn.style.color = 'var(--success)';
+  btn.style.borderColor = 'var(--success)';
+  setTimeout(function() {
+    btn.innerHTML = originalHTML;
+    btn.style.color = '';
+    btn.style.borderColor = '';
+    if (!fromTgFallback) closeShare();
+  }, 1800);
 }
 
 // Init
