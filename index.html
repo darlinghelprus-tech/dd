@@ -853,7 +853,160 @@
     </div>
   </div>
 
-  <!-- РАСШИФРОВКА -->
+  <!-- ПОДНАЁМ ЖИЛЬЯ -->
+  <div class="section">
+    <div class="section-header" onclick="togglePonaem()" style="cursor:pointer;justify-content:space-between;">
+      <div style="display:flex;align-items:center;gap:7px;">
+        <div class="section-icon icon-purple">🏠</div>
+        <span class="section-title-text">Поднаём жилья</span>
+      </div>
+      <button id="ponaem-toggle-btn" type="button" style="width:26px;height:26px;border-radius:50%;border:1px solid var(--border);background:var(--surface2);color:var(--accent);font-size:16px;font-weight:600;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .25s;flex-shrink:0;">+</button>
+    </div>
+
+    <div id="ponaem-body" style="display:none;">
+      <div class="field">
+        <div class="field-left">
+          <div class="field-name">Регион службы</div>
+          <div class="field-desc">Норматив стоимости 1 кв. м</div>
+        </div>
+        <div class="field-right">
+          <select id="ponaem-region" onchange="calc()" style="width:190px;">
+            <option value="0">— Не выбрано —</option>
+            <optgroup label="Популярные">
+              <option value="1474.41">Москва</option>
+              <option value="1039.2">Санкт-Петербург</option>
+            </optgroup>
+            <optgroup label="Центральный ФО">
+              <option value="391.94">Белгородская область</option>
+              <option value="414.98">Брянская область</option>
+              <option value="600.4">Владимирская область</option>
+              <option value="488.5">Воронежская область</option>
+              <option value="627.9">Ивановская область</option>
+              <option value="483.62">Калужская область</option>
+              <option value="417.03">Костромская область</option>
+              <option value="453.88">Курская область</option>
+              <option value="401.53">Липецкая область</option>
+              <option value="853.32">Московская область</option>
+              <option value="298.06">Орловская область</option>
+              <option value="454.67">Рязанская область</option>
+              <option value="441.33">Смоленская область</option>
+              <option value="450.66">Тамбовская область</option>
+              <option value="593.66">Тверская область</option>
+              <option value="695.38">Тульская область</option>
+              <option value="471.63">Ярославская область</option>
+            </optgroup>
+            <optgroup label="Северо-Западный ФО">
+              <option value="708.79">Республика Карелия</option>
+              <option value="624.68">Республика Коми</option>
+              <option value="626.75">Архангельская область</option>
+              <option value="744.68">Ненецкий АО</option>
+              <option value="585.78">Вологодская область</option>
+              <option value="658.43">Калининградская область</option>
+              <option value="605.92">Ленинградская область</option>
+              <option value="812.22">Мурманская область</option>
+              <option value="661.54">Новгородская область</option>
+              <option value="430.68">Псковская область</option>
+            </optgroup>
+            <optgroup label="Южный ФО">
+              <option value="463.1">Республика Адыгея</option>
+              <option value="391.72">Республика Калмыкия</option>
+              <option value="707.77">Республика Крым</option>
+              <option value="676.55">Краснодарский край</option>
+              <option value="422.4">Астраханская область</option>
+              <option value="458.63">Волгоградская область</option>
+              <option value="466.2">Ростовская область</option>
+              <option value="560.13">Севастополь</option>
+            </optgroup>
+            <optgroup label="Северо-Кавказский ФО">
+              <option value="520.93">Республика Дагестан</option>
+              <option value="315.01">Республика Ингушетия</option>
+              <option value="582.84">Кабардино-Балкарская Республика</option>
+              <option value="399.61">Карачаево-Черкесская Республика</option>
+              <option value="704.65">Северная Осетия — Алания</option>
+              <option value="467.05">Чеченская Республика</option>
+              <option value="507.9">Ставропольский край</option>
+            </optgroup>
+            <optgroup label="Приволжский ФО">
+              <option value="485.44">Республика Башкортостан</option>
+              <option value="472.04">Республика Марий Эл</option>
+              <option value="346.17">Республика Мордовия</option>
+              <option value="444.59">Республика Татарстан</option>
+              <option value="522.77">Удмуртская Республика</option>
+              <option value="381.88">Чувашская Республика</option>
+              <option value="546.15">Пермский край</option>
+              <option value="344.57">Кировская область</option>
+              <option value="500.1">Нижегородская область</option>
+              <option value="540.41">Оренбургская область</option>
+              <option value="339.02">Пензенская область</option>
+              <option value="486.71">Самарская область</option>
+              <option value="486.25">Саратовская область</option>
+              <option value="504.3">Ульяновская область</option>
+            </optgroup>
+            <optgroup label="Уральский ФО">
+              <option value="602.05">Курганская область</option>
+              <option value="616.6">Свердловская область</option>
+              <option value="776.96">Тюменская область</option>
+              <option value="674.09">Ханты-Мансийский АО — Югра</option>
+              <option value="1152.54">Ямало-Ненецкий АО</option>
+              <option value="575.85">Челябинская область</option>
+            </optgroup>
+            <optgroup label="Сибирский ФО">
+              <option value="1175.53">Республика Алтай</option>
+              <option value="876.19">Республика Тыва</option>
+              <option value="583.8">Республика Хакасия</option>
+              <option value="597.78">Алтайский край</option>
+              <option value="647.34">Красноярский край</option>
+              <option value="612.65">Иркутская область</option>
+              <option value="457.29">Кемеровская область — Кузбасс</option>
+              <option value="673.23">Новосибирская область</option>
+              <option value="681.48">Омская область</option>
+              <option value="684.55">Томская область</option>
+            </optgroup>
+            <optgroup label="Дальневосточный ФО">
+              <option value="701.95">Республика Бурятия</option>
+              <option value="908.32">Республика Саха (Якутия)</option>
+              <option value="722.13">Забайкальский край</option>
+              <option value="1189.83">Камчатский край</option>
+              <option value="978.22">Приморский край</option>
+              <option value="721.66">Хабаровский край</option>
+              <option value="1054.66">Амурская область</option>
+              <option value="1285.79">Магаданская область</option>
+              <option value="838.3">Сахалинская область</option>
+              <option value="741">Еврейская АО</option>
+              <option value="1037.46">Чукотский АО</option>
+            </optgroup>
+            <optgroup label="Новые субъекты РФ">
+              <option value="466.2">ДНР</option>
+              <option value="466.2">ЛНР</option>
+              <option value="466.2">Запорожская область</option>
+              <option value="466.2">Херсонская область</option>
+            </optgroup>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="field-left">
+          <div class="field-name">Состав семьи</div>
+          <div class="field-desc" id="d-ponaem">1 чел. — 24 кв. м</div>
+        </div>
+        <div class="field-right">
+          <select id="ponaem-family" onchange="calc()">
+            <option value="1">1 человек</option>
+            <option value="2">2 человека</option>
+            <option value="3">3 человека</option>
+            <option value="4">4 человека</option>
+            <option value="5">5 человек</option>
+            <option value="6">6 человек</option>
+            <option value="7">7 человек</option>
+            <option value="8">8 человек</option>
+            <option value="9">9 человек</option>
+            <option value="10">10 человек</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
   <div class="section breakdown-section">
     <div class="section-header">
       <div class="section-icon icon-green">📊</div>
@@ -984,6 +1137,29 @@ function pct(n) {
   return (n * 100).toFixed(0) + '%';
 }
 
+function getSqm(n) {
+  if (n === 1) return 24;
+  if (n === 2) return 36;
+  if (n === 3) return 43;
+  return n * 12;
+}
+
+function togglePonaem() {
+  var body = document.getElementById('ponaem-body');
+  var btn  = document.getElementById('ponaem-toggle-btn');
+  var isOpen = body.style.display !== 'none';
+  if (isOpen) {
+    body.style.display = 'none';
+    btn.textContent = '+';
+    btn.style.transform = 'rotate(0deg)';
+  } else {
+    body.style.display = 'block';
+    btn.textContent = '+';
+    btn.style.transform = 'rotate(45deg)';
+  }
+  calc();
+}
+
 function calc() {
   var OVZ      = +document.getElementById('rank').value;
   var OVD_base = +document.getElementById('position').value;
@@ -1046,6 +1222,20 @@ function calc() {
   var ndfl = Math.max(0, taxBase * 0.13);
   var net = gross - ndfl;
 
+  // ── Поднаём жилья ──
+  var ponaemOpen = document.getElementById('ponaem-body').style.display !== 'none';
+  var ponaemRate = +document.getElementById('ponaem-region').value;
+  var ponaemFam  = +document.getElementById('ponaem-family').value;
+  var ponaemSqm  = getSqm(ponaemFam);
+  var n_ponaem   = (ponaemOpen && ponaemRate > 0) ? ponaemRate * ponaemSqm : 0;
+
+  net = net + n_ponaem;
+
+  // Update ponaem hint
+  var ponaemHints = { 1: '1 чел. — 24 кв. м', 2: '2 чел. — 36 кв. м', 3: '3 чел. — 43 кв. м' };
+  var ponaemHintText = ponaemHints[ponaemFam] || (ponaemFam + ' чел. — ' + ponaemSqm + ' кв. м (по 12 на каждого)');
+  setDescPonaem(ponaemHintText, n_ponaem);
+
   // Update result panel
   document.getElementById('res-gross').textContent = fmt(gross);
   document.getElementById('res-net').textContent   = fmt(net);
@@ -1058,6 +1248,16 @@ function calc() {
 
   function setDesc(id, label, amount) {
     var el = document.getElementById(id);
+    if (!el) return;
+    if (amount > 0) {
+      el.innerHTML = label + ' <span class="desc-amount">+ ' + fmt(amount) + '</span>';
+    } else {
+      el.textContent = label;
+    }
+  }
+
+  function setDescPonaem(label, amount) {
+    var el = document.getElementById('d-ponaem');
     if (!el) return;
     if (amount > 0) {
       el.innerHTML = label + ' <span class="desc-amount">+ ' + fmt(amount) + '</span>';
@@ -1104,6 +1304,7 @@ function calc() {
   if (ch > 0)  rows.push({ name: 'Вычет на детей', val: -ch, cls: 'neg' });
   if (vet > 0) rows.push({ name: 'Вычет ветерана БД', val: -vet, cls: 'neg' });
   rows.push({ name: 'НДФЛ 13%', val: -ndfl, cls: 'neg' });
+  if (n_ponaem > 0) rows.push({ name: 'Компенсация поднаёма жилья (' + ponaemFam + ' чел., ' + ponaemSqm + ' м²)', val: n_ponaem, cls: 'pos' });
 
   var html = '';
   rows.forEach(function (r) {
