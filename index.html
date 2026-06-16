@@ -1007,6 +1007,36 @@
       </div>
     </div>
   </div>
+
+  <!-- ВЕТЕРАН БОЕВЫХ ДЕЙСТВИЙ -->
+  <div class="section">
+    <div class="section-header" onclick="toggleVet()" style="cursor:pointer;justify-content:space-between;">
+      <div style="display:flex;align-items:center;gap:7px;">
+        <div class="section-icon icon-amber">🎖️</div>
+        <div>
+          <span class="section-title-text">Ветеран боевых действий</span>
+          <div style="font-size:11px;color:var(--text3);margin-top:1px;">ЕДВ</div>
+        </div>
+      </div>
+      <button id="vet-toggle-btn" type="button" style="width:26px;height:26px;border-radius:50%;border:1px solid var(--border);background:var(--surface2);color:var(--accent);font-size:16px;font-weight:600;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .25s;flex-shrink:0;">+</button>
+    </div>
+
+    <div id="vet-edv-body" style="display:none;">
+      <div class="field">
+        <div class="field-left">
+          <div class="field-name">Ежемесячная денежная выплата</div>
+          <div class="field-desc" id="d-vet-edv">Ветеранам боевых действий (с индексацией)</div>
+        </div>
+        <div class="field-right">
+          <div style="text-align:right;">
+            <div style="font-size:15px;font-weight:600;color:var(--accent2);">+ 4 838,63 ₽</div>
+            <div style="font-size:11px;color:var(--text3);margin-top:2px;">в месяц</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="section breakdown-section">
     <div class="section-header">
       <div class="section-icon icon-green">📊</div>
@@ -1160,6 +1190,22 @@ function togglePonaem() {
   calc();
 }
 
+function toggleVet() {
+  var body = document.getElementById('vet-edv-body');
+  var btn  = document.getElementById('vet-toggle-btn');
+  var isOpen = body.style.display !== 'none';
+  if (isOpen) {
+    body.style.display = 'none';
+    btn.textContent = '+';
+    btn.style.transform = 'rotate(0deg)';
+  } else {
+    body.style.display = 'block';
+    btn.textContent = '+';
+    btn.style.transform = 'rotate(45deg)';
+  }
+  calc();
+}
+
 function calc() {
   var OVZ      = +document.getElementById('rank').value;
   var OVD_base = +document.getElementById('position').value;
@@ -1231,6 +1277,10 @@ function calc() {
 
   net = net + n_ponaem;
 
+  // ── ЕДВ «Ветеран боевых действий» ──
+  var vetEdvOpen = document.getElementById('vet-edv-body').style.display !== 'none';
+  var n_edv = vetEdvOpen ? 4838.63 : 0;
+
   // Update ponaem hint
   var ponaemHints = { 1: '1 чел. — 24 кв. м', 2: '2 чел. — 36 кв. м', 3: '3 чел. — 43 кв. м' };
   var ponaemHintText = ponaemHints[ponaemFam] || (ponaemFam + ' чел. — ' + ponaemSqm + ' кв. м (по 12 на каждого)');
@@ -1238,7 +1288,7 @@ function calc() {
 
   // Update result panel
   document.getElementById('res-gross').textContent = fmt(gross);
-  document.getElementById('res-net').textContent   = fmt(net);
+  document.getElementById('res-net').textContent   = fmt(net + n_edv);
   document.getElementById('res-ndfl').textContent  = fmt(ndfl);
   document.getElementById('res-ods').textContent   = fmt(ODS);
 
@@ -1305,6 +1355,7 @@ function calc() {
   if (vet > 0) rows.push({ name: 'Вычет ветерана БД', val: -vet, cls: 'neg' });
   rows.push({ name: 'НДФЛ 13%', val: -ndfl, cls: 'neg' });
   if (n_ponaem > 0) rows.push({ name: 'Компенсация поднаёма жилья (' + ponaemFam + ' чел., ' + ponaemSqm + ' м²)', val: n_ponaem, cls: 'pos' });
+  if (n_edv > 0)    rows.push({ name: 'ЕДВ — Ветеран боевых действий', val: n_edv, cls: 'pos' });
 
   var html = '';
   rows.forEach(function (r) {
@@ -1313,7 +1364,7 @@ function calc() {
       + '<span class="breakdown-val ' + r.cls + '">' + (r.val < 0 ? '−' : '+') + fmt(Math.abs(r.val)) + '</span>'
       + '</div>';
   });
-  html += '<div class="breakdown-item total-row"><span class="breakdown-name">🏦 На руки</span><span class="breakdown-val pos">' + fmt(net) + '</span></div>';
+  html += '<div class="breakdown-item total-row"><span class="breakdown-name">🏦 На руки</span><span class="breakdown-val pos">' + fmt(net + n_edv) + '</span></div>';
 
   document.getElementById('breakdown-list').innerHTML = html;
 }
